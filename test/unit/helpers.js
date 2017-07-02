@@ -1,10 +1,9 @@
-import test from 'tape';
 import proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 
 import fakeCognitoConfig from './config';
 
-export function createModule() {
+export function createModule(opts = {}) {
   const CognitoUserPool = sinon.stub();
   const AuthenticationDetails = sinon.stub();
   const UserAttribute = sinon.stub();
@@ -25,9 +24,9 @@ export function createModule() {
     username: 'test',
     password: 'Qwerty123!',
     attributes: [
-      new UserAttribute({ Name: 'email', Value: 'test@email' }),
-      new UserAttribute({ Name: 'name', Value: 'Richard' }),
-      new UserAttribute({ Name: 'phone_number', Value: '+1555234567' }),
+      { Name: 'email', Value: 'test@email' },
+      { Name: 'name', Value: 'Richard' },
+      { Name: 'phone_number', Value: '+1555234567' },
     ],
   };
 
@@ -38,6 +37,20 @@ export function createModule() {
 
   // Some required methods
   const getCurrentUser = CognitoUserPool.prototype.getCurrentUser = sinon.stub().returns(currentUser);
+  const signUp = CognitoUserPool.prototype.signUp = sinon.stub();
+
+  const authenticateUser = CognitoUser.prototype.authenticateUser = sinon.spy(opts.authenticateUser);
+
+  const getUsername = CognitoUser.prototype.getUsername = sinon.stub();
+  const getUserAttributes = CognitoUser.prototype.getUserAttributes = sinon.stub();
+  const getCognitoUserSession = CognitoUser.prototype.getCognitoUserSession = sinon.stub();
+  const updateAttributes = CognitoUser.prototype.updateAttributes = sinon.stub();
+  const changePassword = CognitoUser.prototype.changePassword = sinon.stub();
+  const resendConfirmationCode = CognitoUser.prototype.resendConfirmationCode = sinon.stub();
+  const confirmPassword = CognitoUser.prototype.confirmPassword = sinon.stub();
+  const forgotPassword = CognitoUser.prototype.forgotPassword = sinon.spy(opts.forgotPassword);
+  const confirmRegistration = CognitoUser.prototype.confirmRegistration = sinon.stub();
+  const signOut = CognitoUser.prototype.signOut = sinon.stub();
 
   return {
     module,
@@ -49,8 +62,22 @@ export function createModule() {
       commit: sinon.stub(),
     },
     methods: {
+      CognitoUser: {
+        authenticateUser,
+        getUsername,
+        getUserAttributes,
+        getCognitoUserSession,
+        updateAttributes,
+        changePassword,
+        resendConfirmationCode,
+        confirmPassword,
+        confirmRegistration,
+        forgotPassword,
+        signOut,
+      },
       CognitoUserPool: {
         getCurrentUser,
+        signUp,
       },
     },
     mock: {
@@ -61,14 +88,10 @@ export function createModule() {
 }
 
 // Some helpers for tests
-const idTokenMethods = { getJwtToken: sinon.stub().returns('id') };
-const accessTokenMethods = { getJwtToken: sinon.stub().returns('access') };
-const refreshTokenMethods = { getToken: sinon.stub().returns('refresh') };
-
 export function createSessionStub() {
-  idTokenMethods.getJwtToken.reset();
-  accessTokenMethods.getJwtToken.reset();
-  refreshTokenMethods.getToken.reset();
+  const idTokenMethods = { getJwtToken: sinon.stub().returns('id') };
+  const accessTokenMethods = { getJwtToken: sinon.stub().returns('access') };
+  const refreshTokenMethods = { getToken: sinon.stub().returns('refresh') };
 
   return {
     getIdToken: sinon.stub().returns(idTokenMethods),
