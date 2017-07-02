@@ -48,7 +48,7 @@ test("getCurrentUser => reject when it can't get a session", (t) => {
   });
 });
 
-test.only('getCurrentUser => success', (t) => {
+test('getCurrentUser => success', (t) => {
   const fm = createModule();
 
   const sessionInstance = createSessionStub();
