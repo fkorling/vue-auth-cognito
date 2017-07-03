@@ -4,11 +4,11 @@
   "description": "A Vue.js Vuex module for authentication using Amazon AWS Cognito",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tap -Rspec --coverage --coverage-report=html test/unit/index.js",
+    "test": "babel-tap -Rspec 'test/unit/**/*.test.js'",
     "test:watch": "tape-watch -r babel-core/register -r babel-polyfill 'test/unit/**/*.test.js' -p tap-spec",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile",
-    "coverage": "tap --cov --coverage-report=html --strict test/unit/index.js"
+    "coverage": "babel-tap -Rspec --coverage --coverage-report=html --strict test/**/*.test.js"
   },
   "repository": "https://github.com/kopterio/vue-auth-cognito",
   "author": "Evgeny Zislis <evgeny.zislis@gmail.com>",
@@ -24,12 +24,13 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "babel-tap": "^5.0.0",
     "bower": "^1.8.0",
     "codeclimate-test-reporter": "^0.5.0",
+    "cov": "^0.1.3",
     "coveralls": "^2.13.1",
     "eslint": "^4.1.1",
     "eslint-config-airbnb-base": "^11.2.0",
